@@ -75,8 +75,15 @@ func (d Dump) Exec(ctx context.Context) error {
 	// Use a pipe to gzip the output
 	gzipCmd := exec.CommandContext(ctx, "gzip")
 	gzipCmd.Stdin, _ = cmd.StdoutPipe()
-	gzipCmd.Stdout = os.Stdout
 	gzipCmd.Stderr = os.Stderr
+
+	f, err := os.Create(d.DumpName)
+	if err != nil {
+		return fmt.Errorf("failed to create dump output file: %w", err)
+	}
+
+	defer f.Close()
+	gzipCmd.Stdout = f
 
 	trace(cmd)
 	if err := cmd.Start(); err != nil {
