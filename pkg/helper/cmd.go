@@ -2,7 +2,13 @@ package helper
 
 import (
 	"bytes"
+	"compress/gzip"
+	"context"
+	"fmt"
+	"io"
+	"os"
 	"os/exec"
+	"strings"
 )
 
 // Pipeline strings together the given exec.Cmd commands in a similar fashion
@@ -53,4 +59,39 @@ func Pipeline(cmds ...*exec.Cmd) (pipeLineOutput, collectedStandardError []byte,
 
 	// Return the pipeline output and the collected standard error
 	return output.Bytes(), stderr.Bytes(), nil
+}
+
+func WriteOutputToFileWithGzip(ctx context.Context, cmd string, args []string, envs []string, outputFile string) error {
+	c := exec.CommandContext(ctx, cmd, args...)
+	c.Env = envs
+
+	r, w := io.Pipe()
+	c.Stdout = w
+	c.Stderr = os.Stderr
+
+	f, err := os.Create(outputFile)
+	if err != nil {
+		return fmt.Errorf("failed to create dump output file: %w", err)
+	}
+	defer f.Close()
+
+	trace(c)
+	if err := c.Start(); err != nil {
+		return fmt.Errorf("failed to start %s: %w", cmd, err)
+	}
+
+	if err := c.Wait(); err != nil {
+		return fmt.Errorf("%s failed: %w", cmd, err)
+	}
+
+	if _, err := io.Copy(gzip.NewWriter(f), r); err != nil {
+		return fmt.Errorf("failed to write dump to file: %w", err)
+	}
+
+	return nil
+}
+
+// trace prints the command to the stdout.
+func trace(cmd *exec.Cmd) {
+	fmt.Printf("$ %s\n", strings.Join(cmd.Args, " "))
 }

@@ -1,13 +1,13 @@
 package postgres
 
 import (
-	"compress/gzip"
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/appleboy/docker-backup-database/pkg/helper"
 )
 
 // Dump provides dump execution arguments.
@@ -70,35 +70,7 @@ func (d Dump) Exec(ctx context.Context) error {
 		envs = append(envs, "PGPASSWORD="+d.Password)
 	}
 
-	prog := "pg_dump"
-
-	cmd = exec.CommandContext(ctx, prog, flags...)
-	cmd.Env = envs
-
-	r, w := io.Pipe()
-	cmd.Stdout = w
-	cmd.Stderr = os.Stderr
-
-	f, err := os.Create(d.DumpName)
-	if err != nil {
-		return fmt.Errorf("failed to create dump output file: %w", err)
-	}
-	defer f.Close()
-
-	trace(cmd)
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("failed to start %s: %w", prog, err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("%s failed: %w", prog, err)
-	}
-
-	if _, err := io.Copy(gzip.NewWriter(f), r); err != nil {
-		return fmt.Errorf("failed to write dump to file: %w", err)
-	}
-
-	return nil
+	return helper.WriteOutputToFileWithGzip(ctx, "pg_dump", flags, envs, d.DumpName)
 }
 
 // trace prints the command to the stdout.
