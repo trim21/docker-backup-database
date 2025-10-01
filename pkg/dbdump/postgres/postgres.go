@@ -70,10 +70,9 @@ func (d Dump) Exec(ctx context.Context) error {
 
 	cmd = exec.CommandContext(ctx, "pg_dump", flags...)
 	cmd.Env = envs
-	cmd.Stdout = os.Stdout
 
-	// Use a pipe to gzip the output
 	gzipCmd := exec.CommandContext(ctx, "gzip")
+
 	gzipCmd.Stdin, _ = cmd.StdoutPipe()
 	gzipCmd.Stderr = os.Stderr
 
