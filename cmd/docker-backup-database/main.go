@@ -122,8 +122,12 @@ func run(cfg *config.Config) cli.ActionFunc {
 
 		// backup task
 		backupTask := func() {
+			ctx, cancel := context.WithCancel(appCtx)
+			defer cancel()
+
 			slog.Info("start backup database now", "schedule", cfg.Server.Schedule)
-			if err := backupDB(appCtx, cfg, s3); err != nil {
+
+			if err := backupDB(ctx, cfg, s3); err != nil {
 				slog.Error("can't backup database", "err", err.Error())
 				return
 			}
@@ -131,7 +135,7 @@ func run(cfg *config.Config) cli.ActionFunc {
 
 			// call webhook if configured
 			if cfg.Webhook.URL != "" {
-				if err := callWebhook(appCtx, cfg.Webhook.URL, cfg.Webhook.Insecure); err != nil {
+				if err := callWebhook(ctx, cfg.Webhook.URL, cfg.Webhook.Insecure); err != nil {
 					slog.Error("can't call webhook", "err", err.Error())
 					return
 				}

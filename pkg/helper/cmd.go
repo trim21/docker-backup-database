@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // Pipeline strings together the given exec.Cmd commands in a similar fashion
@@ -75,17 +77,35 @@ func WriteOutputToFileWithGzip(ctx context.Context, cmd string, args []string, e
 	}
 	defer f.Close()
 
+	// Create a gzip writer wrapping the output file
+	gzWriter := gzip.NewWriter(f)
+	defer gzWriter.Close()
+
 	trace(c)
+	// Start the command
 	if err := c.Start(); err != nil {
-		return fmt.Errorf("failed to start %s: %w", cmd, err)
+		w.Close()
+		return fmt.Errorf("failed to start command: %w", err)
 	}
+	// Use errgroup to manage goroutines and errors
+	var eg errgroup.Group
 
-	if err := c.Wait(); err != nil {
-		return fmt.Errorf("%s failed: %w", cmd, err)
-	}
+	// Copy command output to gzip writer in a goroutine
+	eg.Go(func() error {
+		_, err := io.Copy(gzWriter, r)
+		return err
+	})
 
-	if _, err := io.Copy(gzip.NewWriter(f), r); err != nil {
-		return fmt.Errorf("failed to write dump to file: %w", err)
+	// Start a goroutine to wait for the command
+	eg.Go(func() error {
+		cmdErr := c.Wait()
+		w.Close() // Close the writer to signal EOF to the reader
+		return cmdErr
+	})
+
+	// Wait for all goroutines to finish
+	if err := eg.Wait(); err != nil {
+		return err
 	}
 
 	return nil

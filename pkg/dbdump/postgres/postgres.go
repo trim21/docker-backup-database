@@ -41,6 +41,7 @@ func (d Dump) Exec(ctx context.Context) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	trace(cmd)
+
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to get pg_dump version: %w", err)
 	}
