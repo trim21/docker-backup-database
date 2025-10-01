@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	"compress/gzip"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -68,38 +70,32 @@ func (d Dump) Exec(ctx context.Context) error {
 		envs = append(envs, "PGPASSWORD="+d.Password)
 	}
 
-	cmd = exec.CommandContext(ctx, "pg_dump", flags...)
+	prog := "pg_dump"
+
+	cmd = exec.CommandContext(ctx, prog, flags...)
 	cmd.Env = envs
 
-	gzipCmd := exec.CommandContext(ctx, "gzip")
-
-	gzipCmd.Stdin, _ = cmd.StdoutPipe()
-	gzipCmd.Stderr = os.Stderr
+	r, w := io.Pipe()
+	cmd.Stdout = w
+	cmd.Stderr = os.Stderr
 
 	f, err := os.Create(d.DumpName)
 	if err != nil {
 		return fmt.Errorf("failed to create dump output file: %w", err)
 	}
-
 	defer f.Close()
-	gzipCmd.Stdout = f
 
 	trace(cmd)
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("failed to start pg_dump: %w", err)
-	}
-
-	trace(gzipCmd)
-	if err := gzipCmd.Start(); err != nil {
-		return fmt.Errorf("failed to start gzip: %w", err)
+		return fmt.Errorf("failed to start %s: %w", prog, err)
 	}
 
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("pg_dump failed: %w", err)
+		return fmt.Errorf("%s failed: %w", prog, err)
 	}
 
-	if err := gzipCmd.Wait(); err != nil {
-		return fmt.Errorf("gzip failed: %w", err)
+	if _, err := io.Copy(gzip.NewWriter(f), r); err != nil {
+		return fmt.Errorf("failed to write dump to file: %w", err)
 	}
 
 	return nil
