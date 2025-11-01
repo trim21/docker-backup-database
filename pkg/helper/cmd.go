@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/google/shlex"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -114,4 +115,12 @@ func WriteOutputToFileWithGzip(ctx context.Context, cmd string, args []string, e
 // trace prints the command to the stdout.
 func trace(cmd *exec.Cmd) {
 	fmt.Printf("$ %s\n", strings.Join(cmd.Args, " "))
+}
+
+func SplitArgs(s string) ([]string, error) {
+	options, err := shlex.Split(s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to split args with shell syntax: %w", err)
+	}
+	return options, nil
 }

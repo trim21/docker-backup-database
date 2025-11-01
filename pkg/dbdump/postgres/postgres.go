@@ -7,8 +7,6 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/google/shlex"
-
 	"github.com/appleboy/docker-backup-database/pkg/helper"
 )
 
@@ -62,7 +60,7 @@ func (d Dump) Exec(ctx context.Context) error {
 	}
 
 	if d.Opts != "" {
-		options, err := shlex.Split(d.Opts)
+		options, err := helper.SplitArgs(d.Opts)
 		if err != nil {
 			return err
 		}

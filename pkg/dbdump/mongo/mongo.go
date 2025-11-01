@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/google/shlex"
+	"github.com/appleboy/docker-backup-database/pkg/helper"
 )
 
 // Dump provides dump execution arguments.
@@ -72,7 +72,7 @@ func (d Dump) Exec(ctx context.Context) error {
 	flags = append(flags, "--archive="+d.DumpName)
 
 	if d.Opts != "" {
-		options, err := shlex.Split(d.Opts)
+		options, err := helper.SplitArgs(d.Opts)
 		if err != nil {
 			return err
 		}
