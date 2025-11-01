@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/google/shlex"
 )
 
 // Dump provides dump execution arguments.
@@ -70,7 +72,12 @@ func (d Dump) Exec(ctx context.Context) error {
 	flags = append(flags, "--archive="+d.DumpName)
 
 	if d.Opts != "" {
-		flags = append(flags, d.Opts)
+		options, err := shlex.Split(d.Opts)
+		if err != nil {
+			return err
+		}
+
+		flags = append(flags, options...)
 	}
 
 	cmd = exec.CommandContext(ctx, "mongodump", flags...)
