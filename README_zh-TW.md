@@ -15,7 +15,7 @@ Docker 映像檔，用於定期備份您的資料庫（MySQL、Postgres 或 Mong
 
 請參閱 [docker hub 頁面](https://hub.docker.com/repository/docker/appleboy/docker-backup-database)。
 
-- Postgres (9, 10, 11, 12, 13, 14, 15, 16, 17)
+- Postgres (9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
   - 9: appleboy/docker-backup-database:postgres9
   - 10: appleboy/docker-backup-database:postgres10
   - 11: appleboy/docker-backup-database:postgres11
@@ -25,6 +25,7 @@ Docker 映像檔，用於定期備份您的資料庫（MySQL、Postgres 或 Mong
   - 15: appleboy/docker-backup-database:postgres15
   - 16: appleboy/docker-backup-database:postgres16
   - 17: appleboy/docker-backup-database:postgres17
+  - 18: appleboy/docker-backup-database:postgres18
 - MySQL (8, 9)
   - 8: appleboy/docker-backup-database:mysql8
   - 9: appleboy/docker-backup-database:mysql9
