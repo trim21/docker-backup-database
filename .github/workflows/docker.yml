@@ -27,11 +27,6 @@ jobs:
             postgres16,
             postgres15,
             postgres14,
-            postgres13,
-            postgres12,
-            postgres11,
-            postgres10,
-            postgres9,
           ]
     name: ${{ matrix.os }} @ build ${{ matrix.docker }}
     steps:

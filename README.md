@@ -13,42 +13,37 @@ Docker image to periodically backup a your database (MySQL, Postgres or MongoDB)
 
 ## Support Database
 
-see the [docker hub page](https://hub.docker.com/repository/docker/appleboy/docker-backup-database).
+see the [docker hub page](https://hub.docker.com/repository/docker/trim21/docker-backup-database).
 
-- Postgres (9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
-  - 9: appleboy/docker-backup-database:postgres9
-  - 10: appleboy/docker-backup-database:postgres10
-  - 11: appleboy/docker-backup-database:postgres11
-  - 12: appleboy/docker-backup-database:postgres12
-  - 13: appleboy/docker-backup-database:postgres13
-  - 14: appleboy/docker-backup-database:postgres14
-  - 15: appleboy/docker-backup-database:postgres15
-  - 16: appleboy/docker-backup-database:postgres16
-  - 17: appleboy/docker-backup-database:postgres17
-  - 18: appleboy/docker-backup-database:postgres18
+- Postgres (14, 15, 16, 17, 18)
+  - 14: ghcr.io/trim21/docker-backup-database:postgres14
+  - 15: ghcr.io/trim21/docker-backup-database:postgres15
+  - 16: ghcr.io/trim21/docker-backup-database:postgres16
+  - 17: ghcr.io/trim21/docker-backup-database:postgres17
+  - 18: ghcr.io/trim21/docker-backup-database:postgres18
 - MySQL (8, 9)
-  - 8: appleboy/docker-backup-database:mysql8
-  - 9: appleboy/docker-backup-database:mysql9
+  - 8: ghcr.io/trim21/docker-backup-database:mysql8
+  - 9: ghcr.io/trim21/docker-backup-database:mysql9
 - Mongo (4.4)
-  - 4.4: appleboy/docker-backup-database:mongo4.4
+  - 4.4: ghcr.io/trim21/docker-backup-database:mongo4.4
 
 ## Docker Image
 
 You can pull the latest image of the project from the Docker Hub Registry.
 
 ```sh
-docker pull appleboy/docker-backup-database:postgres12
+docker pull ghcr.io/trim21/docker-backup-database:postgres18
 ```
 
 Or you can pull the latest image of the project from the GitHub Container Registry.
 
 ```sh
-docker pull ghcr.io/appleboy/docker-backup-database:postgres12
+docker pull ghcr.io/trim21/docker-backup-database:postgres18
 ```
 
 ## Usage
 
-First steps: Setup the Minio and Postgres 12 Server using docker-compose command.
+First steps: Setup the Minio and Postgres Server using docker-compose command.
 
 ```yaml
 services:
@@ -71,7 +66,7 @@ services:
       retries: 3
 
   postgres:
-    image: postgres:12
+    image: postgres:18
     restart: always
     volumes:
       - pg-data:/var/lib/postgresql/data
@@ -89,7 +84,7 @@ Second Steps: Backup your database and upload the dump file to S3 storage.
 
 ```yaml
 backup_postgres:
-  image: appleboy/docker-backup-database:postgres12
+  image: ghcr.io/trim21/docker-backup-database:postgres18
   logging:
     options:
       max-size: "100k"
@@ -124,7 +119,7 @@ Cron schedule to run periodic backups. See the `TIME_SCHEDULE` and `TIME_LOCATIO
 
 ```yaml
 backup_mysql:
-  image: appleboy/docker-backup-database:mysql8
+  image: ghcr.io/trim21/docker-backup-database:mysql8
   logging:
     options:
       max-size: "100k"
@@ -193,7 +188,7 @@ You can setup the webhook notification to send the backup status to the slack ch
 
 ```diff
 backup_mysql:
-  image: appleboy/docker-backup-database:mysql8
+  image: ghcr.io/trim21/docker-backup-database:mysql8
   logging:
     options:
       max-size: "100k"

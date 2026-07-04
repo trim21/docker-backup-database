@@ -63,7 +63,7 @@ services:
       MONGO_INITDB_DATABASE: db
 
   backup_postgres:
-    image: ghcr.io/appleboy/docker-backup-database:postgres16
+    image: ghcr.io/trim21/docker-backup-database:postgres16
     logging:
       options:
         max-size: "100k"
@@ -87,7 +87,7 @@ services:
       DATABASE_OPTS:
 
   backup_mysql:
-    image: appleboy/docker-backup-database:mysql9
+    image: ghcr.io/trim21/docker-backup-database:mysql9
     logging:
       options:
         max-size: "100k"
@@ -111,7 +111,7 @@ services:
       DATABASE_OPTS:
 
   backup_mysql_schedule:
-    image: ghcr.io/appleboy/appleboy/docker-backup-database:mysql9
+    image: ghcr.io/trim21/docker-backup-database:mysql9
     logging:
       options:
         max-size: "100k"

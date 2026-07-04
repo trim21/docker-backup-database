@@ -13,42 +13,37 @@ Docker 映像檔，用於定期備份您的資料庫（MySQL、Postgres 或 Mong
 
 ## 支援的資料庫
 
-請參閱 [docker hub 頁面](https://hub.docker.com/repository/docker/appleboy/docker-backup-database)。
+請參閱 [docker hub 頁面](https://hub.docker.com/repository/docker/trim21/docker-backup-database)。
 
-- Postgres (9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
-  - 9: appleboy/docker-backup-database:postgres9
-  - 10: appleboy/docker-backup-database:postgres10
-  - 11: appleboy/docker-backup-database:postgres11
-  - 12: appleboy/docker-backup-database:postgres12
-  - 13: appleboy/docker-backup-database:postgres13
-  - 14: appleboy/docker-backup-database:postgres14
-  - 15: appleboy/docker-backup-database:postgres15
-  - 16: appleboy/docker-backup-database:postgres16
-  - 17: appleboy/docker-backup-database:postgres17
-  - 18: appleboy/docker-backup-database:postgres18
+- Postgres (14, 15, 16, 17, 18)
+  - 14: ghcr.io/trim21/docker-backup-database:postgres14
+  - 15: ghcr.io/trim21/docker-backup-database:postgres15
+  - 16: ghcr.io/trim21/docker-backup-database:postgres16
+  - 17: ghcr.io/trim21/docker-backup-database:postgres17
+  - 18: ghcr.io/trim21/docker-backup-database:postgres18
 - MySQL (8, 9)
-  - 8: appleboy/docker-backup-database:mysql8
-  - 9: appleboy/docker-backup-database:mysql9
+  - 8: ghcr.io/trim21/docker-backup-database:mysql8
+  - 9: ghcr.io/trim21/docker-backup-database:mysql9
 - Mongo (4.4)
-  - 4.4: appleboy/docker-backup-database:mongo4.4
+  - 4.4: ghcr.io/trim21/docker-backup-database:mongo4.4
 
 ## Docker 映像檔
 
 您可以從 Docker Hub Registry 拉取此專案的最新映像檔。
 
 ```sh
-docker pull appleboy/docker-backup-database:postgres12
+docker pull ghcr.io/trim21/docker-backup-database:postgres18
 ```
 
 或者，您可以從 GitHub Container Registry 拉取此專案的最新映像檔。
 
 ```sh
-docker pull ghcr.io/appleboy/docker-backup-database:postgres12
+docker pull ghcr.io/trim21/docker-backup-database:postgres18
 ```
 
 ## 使用方法
 
-第一步：使用 docker-compose 指令設置 Minio 和 Postgres 12 伺服器。
+第一步：使用 docker-compose 指令設置 Minio 和 Postgres 伺服器。
 
 ```yaml
 services:
@@ -71,7 +66,7 @@ services:
       retries: 3
 
   postgres:
-    image: postgres:12
+    image: postgres:18
     restart: always
     volumes:
       - pg-data:/var/lib/postgresql/data
@@ -89,7 +84,7 @@ services:
 
 ```yaml
 backup_postgres:
-  image: appleboy/docker-backup-database:postgres12
+  image: ghcr.io/trim21/docker-backup-database:postgres18
   logging:
     options:
       max-size: "100k"
@@ -124,7 +119,7 @@ STORAGE_PATH: backup_postgres
 
 ```yaml
 backup_mysql:
-  image: appleboy/docker-backup-database:mysql8
+  image: ghcr.io/trim21/docker-backup-database:mysql8
   logging:
     options:
       max-size: "100k"
@@ -193,7 +188,7 @@ Cron 表達式表示一組時間，使用 5 個空格分隔的欄位。
 
 ```diff
 backup_mysql:
-  image: appleboy/docker-backup-database:mysql8
+  image: ghcr.io/trim21/docker-backup-database:mysql8
   logging:
     options:
       max-size: "100k"
